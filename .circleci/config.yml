@@ -71,7 +71,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
+      - checkout
       # Restore from cache
       # Your job code here
                 
@@ -79,7 +79,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
+      - checkout
       # Restore from cache
       # Your job code here
             
@@ -87,7 +87,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
+      - checkout
       # Restore from cache
       # Your job code here
 
@@ -95,7 +95,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
+      - checkout
       # Restore from cache
       # Your job code here
 
@@ -103,7 +103,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -137,7 +137,7 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # Checkout code from git
+      - checkout
       # Add ssh keys with fingerprint
       # attach workspace
       - run:
@@ -156,7 +156,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Run migrations
           command: |
@@ -173,7 +173,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
@@ -194,7 +194,7 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # Checkout code from git
+      - checkout
       # Add ssh keys with fingerprint
       # attach workspace
       - run:
@@ -234,7 +234,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
@@ -249,7 +249,7 @@ cleanup:
     docker:
       # Docker image here
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Get old stack workflow id
           command: |
