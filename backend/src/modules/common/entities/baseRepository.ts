@@ -2,7 +2,7 @@ import {
   DeepPartial,
   FindManyOptions,
   Repository,
-  DeleteResult,
+  FindOneOptions,
 } from 'typeorm';
 import { IAggregateRoot } from './aggregateRoot';
 import { SyncEventDispatcher } from '../events';
@@ -52,7 +52,7 @@ export abstract class BaseRepository<TId, TEntity extends IAggregateRoot<TId>> {
     await this.repository.remove(entityToDelete);
   }
 
-  async findById(id: TId | any): Promise<TEntity> {
+  async findById(id: TId | FindOneOptions): Promise<TEntity> {
     return this.repository.findOneOrFail(id);
   }
 
