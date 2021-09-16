@@ -129,6 +129,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install tar
+          command: |
+            apk add --update tar
+      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
@@ -152,10 +156,6 @@ jobs:
                     --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" "Name=tag:type,Values=backend" \
                   --output text >> .circleci/ansible/inventory.txt
-      - run:
-          name: install tar
-          command: |
-            apk add --update tar
       - persist_to_workspace:
           root: ~/
           paths:
