@@ -152,6 +152,10 @@ jobs:
                     --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --filters "Name=tag:project,Values=udapeople" "Name=tag:type,Values=backend" \
                   --output text >> .circleci/ansible/inventory.txt
+      - run:
+          name: install tar
+          command: |
+            apk add --update tar
       - persist_to_workspace:
           root: ~/
           paths:
