@@ -8,7 +8,8 @@ commands:
         type: string
     steps:
       - run:
-          name: install deps
+          name: Install dependencies
+          when: on_fail
           command: |
             apk add tar py-pip
             pip install awscli
@@ -203,12 +204,14 @@ jobs:
             cd backend
             npm i
             npm run migrations > migrations.log
+
+            cat migrations.log
       - run:
           name: Send migration results to memstash
           command: |
-            cat migrations.log
+            cat ./backend/migrations.log
 
-            if cat migrations.log | grep "has been executed successfully"
+            if cat ./backend/migrations.log | grep "has been executed successfully"
             then
               curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "success" https://api.memstash.io/values/migration_result
             else
