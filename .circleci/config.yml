@@ -215,6 +215,7 @@ jobs:
           name: Send migration results to memstash
           command: |
             cat ./backend/migrations.log
+            echo "*******************"
 
             if cat ./backend/migrations.log | grep -e "Item has been created" -e "has been executed successfully"
             then
