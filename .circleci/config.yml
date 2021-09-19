@@ -11,10 +11,11 @@ commands:
           name: Install dependencies
           when: on_fail
           command: |
+            sudo add-apt-repository universe
             sudo apt-get update
             sudo apt-get install -y \
             		tar \
-            		python3-pip
+            		python-pip
             pip install awscli
       - run:
           name: Destroy environments
@@ -144,10 +145,11 @@ jobs:
       - run:
           name: install deps
           command: |
+            sudo add-apt-repository universe
             sudo apt-get update
             sudo apt-get install -y \
                           tar \
-                          python3-pip \
+                          python-pip \
             pip install awscli
       - run:
           name: Ensure back-end infrastructure exists
@@ -245,10 +247,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            sudo add-apt-repository universe
             sudo apt-get update
             sudo apt-get install -y \
                           tar \
-                          python3-pip \
+                          python-pip \
             pip install awscli
       - run:
           name: Get backend url
