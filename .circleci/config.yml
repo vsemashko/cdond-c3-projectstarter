@@ -6,10 +6,17 @@ commands:
     parameters:
       workflow_id:
         type: string
+      is_apt:
+        type: boolean
+        default: true
     steps:
       - run:
-          name: Install dependencies
-          when: on_fail
+          name: Install apt dependencies
+          when:
+            condition:
+              and:
+                - on_fail
+                - equal: [ true, << parameters.is_apt >> ]
           command: |
             sudo add-apt-repository universe
             sudo apt-get update
@@ -17,6 +24,16 @@ commands:
             		tar \
             		python3-pip
             pip3 install awscli
+      - run:
+          name: Install apk dependencies
+          when:
+            condition:
+              and:
+                - on_fail
+                - equal: [ false, << parameters.is_apt >> ]
+          command: |
+            apk add tar py-pip
+            pip install awscli
       - run:
           name: Destroy environments
           when: on_fail
@@ -183,10 +200,11 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          is_apt: true
 
   configure-infrastructure:
     docker:
-      - image: cimg/node:16.8.0
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -197,19 +215,14 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update
-            sudo add-apt-repository universe
-            sudo apt-get update
-            sudo apt-get install -y \
-                          tar \
-                          python3-pip \
-                          ansible
+            apk add --update ansible
       - run:
           name: Configure server
           command: |
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          is_apt: false
 
   run-migrations:
     docker:
@@ -243,6 +256,7 @@ jobs:
             fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          is_apt: true
 
   deploy-frontend:
     docker:
@@ -277,10 +291,11 @@ jobs:
             aws s3 sync frontend/dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          is_apt: true
                     
   deploy-backend:
     docker:
-      - image: cimg/node:16.8.0
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -291,13 +306,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update
-            sudo add-apt-repository universe
-                        sudo apt-get update
-                        sudo apt-get install -y \
-                                      tar \
-                                      python3-pip \
-                                      ansible
+            apk add --update ansible
       - run:
           name: Deploy backend
           command: |
@@ -305,6 +314,7 @@ jobs:
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          is_apt: false
 
   smoke-test:
     docker:
@@ -329,6 +339,7 @@ jobs:
             # your code here
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          is_apt: true
 
   cloudfront-update:
     docker:
@@ -345,6 +356,7 @@ jobs:
             # your code here
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          is_apt: true
 
   cleanup:
     docker:
