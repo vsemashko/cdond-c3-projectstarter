@@ -14,19 +14,18 @@ commands:
           name: Install apt dependencies
           when: on_fail
           command: |
-            if which apk | grep "not found"
-            then
               sudo add-apt-repository universe
               sudo apt-get update
               sudo apt-get install -y \
                     tar \
                     python3-pip
               pip3 install awscli
-            else
-              echo "apk"
+      - run:
+          name: Install apk dependencies
+          when: on_fail
+          command: |
               apk add tar py-pip
               pip install awscli
-            fi
       - run:
           name: Destroy environments
           when: on_fail
@@ -100,8 +99,8 @@ jobs:
           name: Front-end test
           command: |
             cd frontend
-            npm i
             #TODO REMOVE
+            #npm i
             #npm run test
                 
   test-backend:
@@ -115,8 +114,8 @@ jobs:
           name: Back-end test
           command: |
             cd backend
-            npm i
             # TODO fix
+            # npm i
             # npm run test
             
   scan-frontend:
