@@ -12,11 +12,7 @@ commands:
     steps:
       - run:
           name: Install apt dependencies
-          when:
-            condition:
-              and:
-                - on_fail
-                - equal: [ true, << parameters.is_apt >> ]
+          when: on_fail
           command: |
             sudo add-apt-repository universe
             sudo apt-get update
@@ -26,11 +22,7 @@ commands:
             pip3 install awscli
       - run:
           name: Install apk dependencies
-          when:
-            condition:
-              and:
-                - on_fail
-                - equal: [ false, << parameters.is_apt >> ]
+          when: on_fail
           command: |
             apk add tar py-pip
             pip install awscli
