@@ -140,7 +140,7 @@ jobs:
       - run:
           name: install deps
           command: |
-            apk add tar py-pip
+            apk add tar py-pip curl
             pip install awscli
       - run:
           name: Ensure back-end infrastructure exists
@@ -164,7 +164,8 @@ jobs:
             echo [web] > .circleci/ansible/inventory.txt
             BACKEND_IP=$(aws ec2 describe-instances \
                                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                                   --filters "Name=tag:project,Values=udapeople" "Name=tag:type,Values=backend")
+                                     --filters "Name=tag:project,Values=udapeople" "Name=tag:type,Values=backend" \
+                                     --output text)
             echo $BACKEND_IP
             echo $BACKEND_IP >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data $BACKEND_IP https://api.memstash.io/values/backend_api
