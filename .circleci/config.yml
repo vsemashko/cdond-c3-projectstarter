@@ -15,8 +15,8 @@ commands:
             sudo apt-get update
             sudo apt-get install -y \
             		tar \
-            		python-pip
-            pip install awscli
+            		python3-pip
+            pip 3install awscli
       - run:
           name: Destroy environments
           when: on_fail
@@ -149,8 +149,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y \
                           tar \
-                          python-pip \
-            pip install awscli
+                          python3-pip \
+            pip 3install awscli
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -251,8 +251,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y \
                           tar \
-                          python-pip \
-            pip install awscli
+                          python3-pip \
+            pip 3install awscli
       - run:
           name: Get backend url
           command: |
