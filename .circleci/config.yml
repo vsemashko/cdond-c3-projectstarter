@@ -12,7 +12,7 @@ commands:
           when: on_fail
           command: |
             apt-get update
-            apt-get install -y \
+            sudo apt-get install -y \
             		tar \
             		python3-pip
             pip3 install awscli
@@ -144,7 +144,7 @@ jobs:
           name: install deps
           command: |
             apt-get update
-            apt-get install -y \
+            sudo apt-get install -y \
                           tar \
                           python3-pip \
             pip3 install awscli
@@ -195,7 +195,7 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update
-            apt-get install -y ansible
+            sudo apt-get install -y ansible
       - run:
           name: Configure server
           command: |
@@ -245,7 +245,7 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update
-            apt-get install -y \
+            sudo apt-get install -y \
                           tar \
                           python3-pip \
             pip3 install awscli
@@ -283,7 +283,7 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update
-            apt-get install -y ansible
+            sudo apt-get install -y ansible
       - run:
           name: Deploy backend
           command: |
