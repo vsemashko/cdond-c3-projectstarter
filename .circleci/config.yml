@@ -186,7 +186,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: cimg/node:16.8.0
     steps:
       - checkout
       - add_ssh_keys:
@@ -198,7 +198,12 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get update
-            sudo apt-get install -y ansible
+            sudo add-apt-repository universe
+            sudo apt-get update
+            sudo apt-get install -y \
+                          tar \
+                          python3-pip \
+                          ansible
       - run:
           name: Configure server
           command: |
@@ -275,7 +280,7 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: cimg/node:16.8.0
     steps:
       - checkout
       - add_ssh_keys:
@@ -287,7 +292,12 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get update
-            sudo apt-get install -y ansible
+            sudo add-apt-repository universe
+                        sudo apt-get update
+                        sudo apt-get install -y \
+                                      tar \
+                                      python3-pip \
+                                      ansible
       - run:
           name: Deploy backend
           command: |
