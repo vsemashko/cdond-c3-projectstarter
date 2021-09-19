@@ -223,7 +223,10 @@ jobs:
           command: |
             cd backend
             npm i
-            npm run migrations > migrations.log
+            echo "run migrations"
+            npm run migrations > migrations.log  2>&1
+            echo "migrations completed"
+            cat migrations.log
       - run:
           name: Send migration results to memstash
           command: |
