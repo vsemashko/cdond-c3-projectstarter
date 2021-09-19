@@ -205,6 +205,7 @@ jobs:
           name: install deps
           command: |
             apk add --update tar nodejs npm curl
+            node --version
       - run:
           name: Prepare env config
           command: |
