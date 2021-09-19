@@ -11,8 +11,11 @@ commands:
           name: Install dependencies
           when: on_fail
           command: |
-            apk add tar py-pip
-            pip install awscli
+            apt-get update
+            apt-get install -y \
+            		tar \
+            		python3-pip
+            pip3 install awscli
       - run:
           name: Destroy environments
           when: on_fail
@@ -134,14 +137,17 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: alpine:latest
+      - image: cimg/node:16.8.0
     steps:
       - checkout
       - run:
           name: install deps
           command: |
-            apk add tar py-pip curl
-            pip install awscli
+            apt-get update
+            apt-get install -y \
+                          tar \
+                          python3-pip \
+            pip3 install awscli
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -188,7 +194,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible
+            apt-get update
+            apt-get install -y ansible
       - run:
           name: Configure server
           command: |
@@ -231,14 +238,17 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: alpine:latest
+      - image: cimg/node:16.8.0
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar py-pip nodejs npm
-            pip install awscli
+            apt-get update
+            apt-get install -y \
+                          tar \
+                          python3-pip \
+            pip3 install awscli
       - run:
           name: Get backend url
           command: |
@@ -272,7 +282,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible
+            apt-get update
+            apt-get install -y ansible
       - run:
           name: Deploy backend
           command: |
@@ -283,7 +294,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: alpine:latest
+      - image: cimg/node:16.8.0
     steps:
       - checkout
       - run:
@@ -307,7 +318,7 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: alpine:latest
+      - image: cimg/node:16.8.0
     steps:
       - checkout
       - run:
