@@ -166,7 +166,6 @@ jobs:
                                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
                                      --filters "Name=tag:project,Values=udapeople" "Name=tag:type,Values=backend" \
                                      --output text)
-            echo $BACKEND_IP
             echo $BACKEND_IP >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data $BACKEND_IP https://api.memstash.io/values/backend_api
       - persist_to_workspace:
@@ -199,9 +198,13 @@ jobs:
 
   run-migrations:
     docker:
-      - image: cimg/node:16.8.0
+      - image: alpine:latest
     steps:
       - checkout
+      - run:
+          name: install deps
+          command: |
+            apk add --update tar nodejs npm curl
       - run:
           name: Run migrations
           command: |
@@ -213,7 +216,7 @@ jobs:
           command: |
             cat ./backend/migrations.log
 
-            if cat ./backend/migrations.log | grep "has been executed successfully"
+            if cat ./backend/migrations.log | grep "has been executed successfully|Item has been created"
             then
               curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "success" https://api.memstash.io/values/migration_result
             else
@@ -225,13 +228,13 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/node:16.8.0
+      - image: alpine:latest
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add tar py-pip
+            apk add --update tar py-pip nodejs npm
             pip install awscli
       - run:
           name: Get backend url
@@ -301,7 +304,7 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: amazon/aws-cli
+      - image: alpine:latest
     steps:
       - checkout
       - run:
