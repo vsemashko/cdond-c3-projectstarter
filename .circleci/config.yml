@@ -188,8 +188,6 @@ jobs:
             echo $BACKEND_IP >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data $BACKEND_IP https://api.memstash.io/values/backend_api
 
-            echo "result:"
-            curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api
       - persist_to_workspace:
           root: ~/
           paths:
@@ -228,28 +226,19 @@ jobs:
           command: |
             cd backend
             npm i
-            echo "run migrations"
             npm run migrations > migrations.log  2>&1
-            echo "migrations completed"
-            cat migrations.log
       - run:
-          name: Cat migrations
+          name: Print migrations
           when: on_fail
           command: |
             cat ./backend/migrations.log
       - run:
           name: Send migration results to memstash
           command: |
-            cat ./backend/migrations.log
-            echo "*******************"
-
             if cat ./backend/migrations.log | grep -e "has been executed successfully" -e "No migrations are pending"
             then
-              echo "success"
               curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "success" https://api.memstash.io/values/migration_result
             else
-              echo "failure"
-              cat ./backend/migrations.log | grep -e "Item has been created" -e "has been executed successfully"
               curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "failure" https://api.memstash.io/values/migration_result
               exit 1
             fi
@@ -286,10 +275,8 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
             aws s3 sync frontend/dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
 
   deploy-backend:
     docker:
@@ -310,8 +297,6 @@ jobs:
           command: |
             ls -lh backend/dist
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:

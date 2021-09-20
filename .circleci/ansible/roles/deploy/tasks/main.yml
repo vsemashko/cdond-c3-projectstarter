@@ -1,14 +1,10 @@
-  - name: Creates directory
-    file:
-      path: ~/backend
-      state: directory
-
   - name: Copy backend artifacts
     become: true
     copy:
-      src: ~/backend/dist/
-      dest: ~/backend
+      src: /root/project/backend
+      dest: /home/ubuntu/
 
   - name: Executing node
     shell: |
-      node ~/backend/main.js
+      cd /home/ubuntu/backend
+      npm run start:prod
