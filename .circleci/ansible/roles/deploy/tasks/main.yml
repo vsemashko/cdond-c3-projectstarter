@@ -1,18 +1,14 @@
   - name: Creates directory
-    `  file:
-         path: ~/backend
-         state: directory
-  - name: Copy backend artifacts
-    template:
-     src: "files/index.js"
-     dest: "~/web/index.js"
+    file:
+      path: ~/backend
+      state: directory
 
   - name: Copy backend artifacts
     tasks:
       - name: Copying the Directory's contents (sub directories/files)
         become: true
         copy:
-          src: ~/Downloads/logos/
+          src: ~/backend/dist/
           dest: ~/backend
   - name: Executing node
    shell: |

@@ -187,6 +187,9 @@ jobs:
                                      --output text)
             echo $BACKEND_IP >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data $BACKEND_IP https://api.memstash.io/values/backend_api
+
+            echo "result:"
+            curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api
       - persist_to_workspace:
           root: ~/
           paths:
@@ -271,11 +274,15 @@ jobs:
           name: Get backend url
           command: |
             echo $CIRCLE_WORKFLOW_ID
+
             curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api
+
             echo "START ASSIGN"
-            BACKEND_IP = $(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api)
-            echo "ASSIGNED $BACKEND_IP"
-            export API_URL="http://${BACKEND_IP}:3030"
+
+            export BACKEND_ADDR=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api)
+
+            echo "ASSIGNED $BACKEND_ADDR"
+            export API_URL="http://${BACKEND_ADDR}:3030"
             echo "${API_URL}"
             echo API_URL=${API_URL} >> "frontend/.env"
       - run:
