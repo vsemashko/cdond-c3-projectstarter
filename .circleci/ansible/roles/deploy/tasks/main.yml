@@ -11,5 +11,5 @@
           src: ~/backend/dist/
           dest: ~/backend
   - name: Executing node
-   shell: |
-     node backend/main.js
+    shell: |
+       node backend/main.js
