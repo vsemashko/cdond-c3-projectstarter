@@ -295,8 +295,8 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            ls -lh backend/dist
-            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
+            tar -czf backend.tar.gz backend
+            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml -vvv
 
   smoke-test:
     docker:

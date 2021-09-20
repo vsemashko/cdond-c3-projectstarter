@@ -1,10 +1,14 @@
-  - name: Copy backend artifacts
-    become: true
+  - name: "copy dist archive"
     copy:
-      src: /root/project/backend/dist
-      dest: /home/ubuntu/
+      src: ../../backend.tar.gz
+      dest: backend.tar.gz
+
+  - name: "Unpack dist archive"
+    shell: |
+      tar -xzf backend.tar.gz
+      rm backend.tar.gz
 
   - name: Executing node
     shell: |
-      cd /home/ubuntu/dist
-      node main.js
+      cd /home/ubuntu/backend
+      npm run
