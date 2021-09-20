@@ -263,8 +263,8 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export BACKEND_ADDR=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api)
-            export API_URL="http://${BACKEND_ADDR}:3030"
+            export BACKEND_IP=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api)
+            export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             echo API_URL=${API_URL} >> "frontend/.env"
       - run:
@@ -316,31 +316,43 @@ jobs:
 
   smoke-test:
     docker:
-      - image: cimg/node:16.8.0
+      - image: alpine:latest
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update curl
       - run:
           name: Get backend url
           command: |
-            # your code here
+            export BACKEND_IP=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api)
+            export BACKEND_URL="http://${BACKEND_IP}:3030"
       - run:
           name: Backend smoke test.
           command: |
-            # your code here
+            if curl -s http://${BACKEND_URL}:3030/api/status | grep "ok"
+            then
+              exit 0
+            else
+              exit 1
+            fi
       - run:
           name: Frontend smoke test.
           command: |
-            # your code here
+            FRONTEND_URL = "http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-2.amazonaws.com"
+            if curl -s $FRONTEND_URL | grep "Welcome"
+            then
+              return 1
+            else
+              return 0
+            fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cloudfront-update:
     docker:
-      - image: cimg/node:16.8.0
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
