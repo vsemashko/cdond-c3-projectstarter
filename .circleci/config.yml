@@ -273,15 +273,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            echo $CIRCLE_WORKFLOW_ID
-
-            curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api
-
-            echo "START ASSIGN"
-
             export BACKEND_ADDR=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api)
-
-            echo "ASSIGNED $BACKEND_ADDR"
             export API_URL="http://${BACKEND_ADDR}:3030"
             echo "${API_URL}"
             echo API_URL=${API_URL} >> "frontend/.env"
@@ -294,6 +286,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
+            echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
             aws s3 sync frontend/dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}

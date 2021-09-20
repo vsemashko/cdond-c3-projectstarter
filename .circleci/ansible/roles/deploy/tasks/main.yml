@@ -4,12 +4,11 @@
       state: directory
 
   - name: Copy backend artifacts
-    tasks:
-      - name: Copying the Directory's contents (sub directories/files)
-        become: true
-        copy:
-          src: ~/backend/dist/
-          dest: ~/backend
+    become: true
+    copy:
+      src: ~/backend/dist/
+      dest: ~/backend
+
   - name: Executing node
     shell: |
-       node backend/main.js
+      node ~/backend/main.js
