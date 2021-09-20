@@ -11,4 +11,4 @@
   - name: Executing node
     shell: |
       cd /home/ubuntu/backend
-      npm run
+      npm run start:prod
