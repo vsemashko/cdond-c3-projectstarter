@@ -1,10 +1,24 @@
+  - name: Ansible zip dest directory
+    archive:
+      path:
+        - /root/project/backend/dist
+      dest: /root/project/backend/dist.zip
+      format: zip
+
   - name: Copy backend artifacts
     become: true
     copy:
-      src: /root/project/backend
+      src: /root/project/backend/dist.zip
       dest: /home/ubuntu/
+
+  - name: Unarchive backend artifacts
+    become: true
+    unarchive:
+      src: /home/ubuntu/dist.zip
+      dest: /home/ubuntu/dist
+      remote_src: True
 
   - name: Executing node
     shell: |
-      cd /home/ubuntu/backend
-      npm run start:prod
+      cd /home/ubuntu/dist
+      node main.js
