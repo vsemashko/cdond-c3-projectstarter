@@ -166,7 +166,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=udapeople type=backend \
+              --tags project=udapeople \
                --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
@@ -174,7 +174,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --tags project=udapeople type=frontend \
+              --tags project=udapeople \
                --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
                --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
@@ -183,7 +183,7 @@ jobs:
             echo [web] > .circleci/ansible/inventory.txt
             BACKEND_IP=$(aws ec2 describe-instances \
                                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                                     --filters "Name=tag:project,Values=udapeople" "Name=tag:type,Values=backend" \
+                                     --filters "Name=tag:project,Values=udapeople" "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                                      --output text)
             echo $BACKEND_IP >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data $BACKEND_IP https://api.memstash.io/values/backend_api
@@ -295,11 +295,25 @@ jobs:
           command: |
             apk add --update ansible
       - run:
+          name: Configure env
+          command: |
+            echo "ENVIRONMENT=production" > backend/.env
+            echo "TYPEORM_CONNECTION=${TYPEORM_CONNECTION}" >> backend/.env
+            echo "TYPEORM_ENTITIES=${TYPEORM_ENTITIES}" >> backend/.env
+            echo "TYPEORM_HOST=${TYPEORM_HOST}" >> backend/.env
+            echo "TYPEORM_PORT=${TYPEORM_PORT}" >> backend/.env
+            echo "TYPEORM_USERNAME=${TYPEORM_USERNAME}" >> backend/.env
+            echo "TYPEORM_PASSWORD=${TYPEORM_PASSWORD}" >> backend/.env
+            echo "TYPEORM_DATABASE=${TYPEORM_DATABASE}" >> backend/.env
+
+      - run:
           name: Deploy backend
           command: |
             cat ~/project/.circleci/ansible/inventory.txt
 
-            tar -czf backend.tar.gz backend/dist backend/package.json
+            tar -czf backend.tar.gz backend/dist \
+                                    backend/package.json \
+                                    backend/.env
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml -v
 
   smoke-test:
