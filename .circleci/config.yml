@@ -6,9 +6,6 @@ commands:
     parameters:
       workflow_id:
         type: string
-      is_apt:
-        type: boolean
-        default: true
     steps:
       - run:
           name: Install apt dependencies
@@ -87,6 +84,10 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - ./backend/dist
 
   test-frontend:
     docker:
@@ -192,7 +193,6 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          is_apt: true
 
   configure-infrastructure:
     docker:
@@ -214,7 +214,6 @@ jobs:
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          is_apt: false
 
   run-migrations:
     docker:
@@ -253,7 +252,6 @@ jobs:
             fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          is_apt: true
 
   deploy-frontend:
     docker:
@@ -272,7 +270,11 @@ jobs:
       - run:
           name: Get backend url
           command: |
+            echo $CIRCLE_WORKFLOW_ID
+            curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api
+            echo "START ASSIGN"
             BACKEND_IP = $(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api)
+            echo "ASSIGNED $BACKEND_IP"
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             echo API_URL=${API_URL} >> "frontend/.env"
@@ -288,8 +290,7 @@ jobs:
             aws s3 sync frontend/dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          is_apt: true
-                    
+
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
@@ -311,7 +312,6 @@ jobs:
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          is_apt: false
 
   smoke-test:
     docker:
@@ -336,7 +336,6 @@ jobs:
             # your code here
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          is_apt: true
 
   cloudfront-update:
     docker:
@@ -353,7 +352,6 @@ jobs:
             # your code here
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          is_apt: true
 
   cleanup:
     docker:
