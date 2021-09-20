@@ -8,9 +8,12 @@
       tar -xzf backend.tar.gz
       rm backend.tar.gz
 
-  - name: Executing node
+  - name: Install dependencies
     shell: |
       cd /home/ubuntu/backend
       npm i
-      ls -lh
-      npm run start:prod
+
+  - name: Executing node
+    shell: |
+      cd /home/ubuntu/backend
+      node dist/main.js
