@@ -240,7 +240,7 @@ jobs:
             cat ./backend/migrations.log
             echo "*******************"
 
-            if cat ./backend/migrations.log | grep -e "Item has been created" -e "has been executed successfully"
+            if cat ./backend/migrations.log | grep -e "has been executed successfully" -e "No migrations are pending"
             then
               echo "success"
               curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "success" https://api.memstash.io/values/migration_result
