@@ -313,6 +313,8 @@ jobs:
 
             tar czf backend.tar.gz backend/
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml -v
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
@@ -331,10 +333,11 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            if curl -s http://${BACKEND_URL}:3030/api/status | grep "ok"
+            if curl -s "$BACKEND_URL/api/status" | grep "ok"
             then
               exit 0
             else
+              curl -s $BACKEND_URL/api/status
               exit 1
             fi
       - run:
@@ -356,13 +359,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dependencies
-          command: |
-            # your code here
-      - run:
           name: Update cloudfront distribution
           command: |
-            # your code here
+            PREV_DISTR=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
+
+            aws cloudformation update-stack --use-previous-template \
+                  --stack-name udapeople \
+                  --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7},UsePreviousValue=false
+
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data $PREV_DISTR https://api.memstash.io/values/prev_distribution
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
