@@ -41,8 +41,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS = $(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/migration_result)
-            if(( $SUCCESS==1 )); 
+            if(( $(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/migration_result)==1 ));
             then
               cd backend
               npm i
@@ -333,8 +332,6 @@ jobs:
             export BACKEND_IP=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/backend_api)
             export BACKEND_URL="http://${BACKEND_IP}:3030"
 
-            curl -s "${BACKEND_URL}/api/status"
-
             if curl -s "${BACKEND_URL}/api/status" | grep "ok"
             then
               exit 0
@@ -345,8 +342,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            FRONTEND_URL = "http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-2.amazonaws.com"
-            if curl -s $FRONTEND_URL | grep "Welcome"
+            if curl -s "http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-2.amazonaws.com" | grep "Welcome"
             then
               return 1
             else
