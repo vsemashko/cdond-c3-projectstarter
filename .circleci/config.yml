@@ -96,6 +96,7 @@ jobs:
           keys: [ frontend-build ]
       - run:
           name: Front-end test
+          no_output_timeout: 30m
           command: |
             cd frontend
             npm i
