@@ -344,9 +344,10 @@ jobs:
           command: |
             if curl -s "http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-2.amazonaws.com" | grep "Welcome"
             then
-              return 1
-            else
               return 0
+            else
+              curl -s "http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website.us-east-2.amazonaws.com"
+              return 1
             fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
