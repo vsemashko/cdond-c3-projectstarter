@@ -98,9 +98,8 @@ jobs:
           name: Front-end test
           command: |
             cd frontend
-            #TODO REMOVE
-            #npm i
-            #npm run test
+            npm i
+            npm run test
                 
   test-backend:
     docker:
@@ -113,9 +112,8 @@ jobs:
           name: Back-end test
           command: |
             cd backend
-            # TODO fix
-            # npm i
-            # npm run test
+            npm i
+            npm run test
             
   scan-frontend:
     docker:
