@@ -1,0 +1,27 @@
+{{template "head" .}}
+{{template "prom_content_head" .}}
+<h1>Udapeople Backend Metrics</h1>
+
+<strong>Server Status:</strong> {{ template "prom_query_drilldown" (args "up") }}
+
+<br />
+<br />
+
+
+<strong>Current CPU Usage:</strong> {{ template "prom_query_drilldown" (args "sum(rate(node_cpu_seconds_total{mode!='idle'}[5m])) * 100 / 2" "%") }}
+
+<br />
+<br />
+
+<strong>Current Memory Usage:</strong> {{ template "prom_query_drilldown" (args "100 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100" "%") }}
+
+
+<br />
+<br />
+
+<strong>Current Disk Usage:</strong>
+{{ template "prom_query_drilldown" (args "100 - ((node_filesystem_avail_bytes{mountpoint='/',fstype!='rootfs'} * 100) /node_filesystem_size_bytes{mountpoint='/',fstype!='rootfs'})" "%") }}
+
+
+{{template "prom_content_tail" .}}
+{{template "tail"}}

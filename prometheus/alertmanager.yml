@@ -1,0 +1,13 @@
+route:
+  group_by: [Alertname]
+  receiver: email-me
+
+receivers:
+  - name: email-me
+    email_configs:
+      - to: email@email.com
+        from: email@email.com
+        smarthost: smtp.gmail.com:587
+        auth_username: email@email.com
+        auth_identity: email@email.com
+        auth_password: xxxx
